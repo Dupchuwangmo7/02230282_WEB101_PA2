@@ -24,6 +24,7 @@ export default function Home() {
     selectPokemon,
   } = useStore();
   const [search, setSearch] = useState("");
+  const [sortOption, setSortOption] = useState("");
   const router = useRouter();
   const itemsPerPage = 20;
 
@@ -58,6 +59,19 @@ export default function Home() {
     catchPokemon(pokemon);
     selectPokemon(pokemon);
     router.push("/caught");
+  };
+
+  const sortPokemons = (pokemons, sortOption) => {
+    switch (sortOption) {
+      case "name":
+        return [...pokemons].sort((a, b) => a.name.localeCompare(b.name));
+      case "height":
+        return [...pokemons].sort((a, b) => a.height - b.height);
+      case "weight":
+        return [...pokemons].sort((a, b) => a.weight - b.weight);
+      default:
+        return pokemons;
+    }
   };
 
   const renderPagination = () => {
@@ -131,6 +145,18 @@ export default function Home() {
           Search
         </Button>
       </div>
+      <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+        <select
+          value={sortOption}
+          onChange={(e) => setSortOption(e.target.value)}
+          className="sort-dropdown"
+        >
+          <option value="">Sort by</option>
+          <option value="name">Name</option>
+          <option value="height">Height</option>
+          <option value="weight">Weight</option>
+        </select>
+      </div>
       <div
         style={{
           marginTop: "20px",
@@ -140,7 +166,7 @@ export default function Home() {
           justifyContent: "center",
         }}
       >
-        {pokemons.map((pokemon, index) => (
+        {sortPokemons(pokemons, sortOption).map((pokemon, index) => (
           <div
             key={index}
             style={{
